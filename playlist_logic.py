@@ -66,26 +66,22 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
 
     hype_min_energy = profile.get("hype_min_energy", 7)
     chill_max_energy = profile.get("chill_max_energy", 3)
-    favorite_genre = profile.get("favorite_genre", "")
 
-    hype_keywords = ["rock", "punk", "party"]
-    chill_keywords = ["lofi", "ambient", "sleep"]
+    hype_keywords = {"rock", "punk", "party"}
+    chill_keywords = {"lofi", "ambient", "sleep"}
 
-    is_hype_keyword = any(k in genre for k in hype_keywords)
-    is_chill_keyword = any(k in genre for k in chill_keywords)
+    is_high_energy = energy >= hype_min_energy
+    is_low_energy = energy <= chill_max_energy
+    is_hype_genre = any(k in genre for k in hype_keywords)
+    is_chill_genre = any(k in genre for k in chill_keywords)
 
-    # High energy → always Hype
-    if energy >= hype_min_energy:
-        return "Hype"
-    # Low energy → always Chill
-    if energy <= chill_max_energy:
-        return "Chill"
+    # Energy is the primary classifier
+    if is_high_energy or is_low_energy:
+        return "Hype" if is_high_energy else "Chill"
 
-    # Mid-range energy: use genre keywords and favorite genre as tiebreakers
-    if is_hype_keyword:
-        return "Hype"
-    if is_chill_keyword:
-        return "Chill"
+    # Genre keywords break ties for mid-range energy
+    if is_hype_genre or is_chill_genre:
+        return "Hype" if is_hype_genre else "Chill"
 
     return "Mixed"
 
