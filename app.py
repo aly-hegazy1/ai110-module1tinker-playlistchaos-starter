@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_extras.specialized_inputs import search_input
 
 from playlist_logic import (
     DEFAULT_PROFILE,
@@ -276,7 +277,12 @@ def render_playlist(label, songs):
         st.write("No songs in this playlist.")
         return
 
-    query = st.text_input(f"Search {label} playlist by artist", key=f"search_{label}")
+    query = search_input(
+        f"Search {label} playlist by artist",
+        key=f"search_{label}",
+        keyup=True,
+        debounce=150,
+    )
     filtered = search_songs(songs, query, field="artist")
 
     if not filtered:
